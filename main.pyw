@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
 import customtkinter as ctk
+import webbrowser
 
 # tester_file = "tester.txt"
 
@@ -18,35 +19,49 @@ import customtkinter as ctk
 # read & write
 # os.chmod(tester_file, S_IWUSR|S_IREAD)
 
+if 'macOS' in platform.platform():
+    PADX, PADY = 8, 0.5
+    WIDTH, HEIGHT = 0, 0
+    TITLE_FONT = 'Arial 30 bold'
+    GEO = '410x310'
+else:
+    PADX, PADY = 10, 5
+    WIDTH, HEIGHT = 0, 0
+    TITLE_FONT = 'Arial 24 bold'
+    GEO = '360x310'
 
+IMAGE_SIZE = int(260*1.5), int(281*1.5)
 
 class App:
 
     def __init__(self, root):
         self.root = root
-        self.root.geometry('410x310')
+        self.root.geometry(GEO)
         self.root.title('BL2 R.O.S')
         ctk.set_appearance_mode("System")
         ctk.set_default_color_theme(current_path + 'theme.json')
-        self.image = tk.PhotoImage(file=current_path + 'vault.png')
+        img = Image.open(current_path + 'vault.png')
+        resize_img = img.resize(IMAGE_SIZE)
+        self.image = ImageTk.PhotoImage(resize_img)
         self.state = tk.StringVar()
+        self.root.iconphoto(False, self.image)
         self.build()
 
     def build(self):
-        title_lbl = ctk.CTkLabel(self.root, text="BL2 Read Only Setter", text_font='Arial 30 bold')
+        title_lbl = ctk.CTkLabel(self.root, text="BL2 Read Only Setter", text_font=TITLE_FONT)
         self.lbox = tk.Listbox(self.root, height=len(self.files), width=12)
         read_only_btn = ctk.CTkButton(self.root, text='Read Only',height=2, width=120, command=self.set_read_only)
         read_write_btn = ctk.CTkButton(self.root, text='Read & Write',height=2, width=120, command=self.set_read_and_write)
         all_read_write_btn = ctk.CTkButton(self.root, text='All Read & Write',height=2, width=120, command=self.set_all_read_and_write)
-        img_lbl = ctk.CTkLabel(self.root, image=self.image)
+        img_lbl = ctk.CTkLabel(self.root, image=self.image, width=4, height=4)
         state_lbl = ctk.CTkLabel(self.root, textvariable=self.state)
 
-        title_lbl.grid(row=0,column=0, padx=8, pady=0.5, columnspan=2)
-        self.lbox.grid(row=1, column=0, padx=8, pady=0.5)
-        read_only_btn.grid(row=2, column=0, padx=8, pady=0.5)
-        read_write_btn.grid(row=3, column=0, padx=8, pady=0.5)
-        all_read_write_btn.grid(row=4, column=0, padx=8, pady=0.5)
-        img_lbl.grid(row=1, column=1, rowspan=6, sticky='s')
+        title_lbl.grid(row=0,column=0, padx=PADX, pady=PADY, columnspan=2)
+        self.lbox.grid(row=1, column=0, padx=PADX, pady=PADY)
+        read_only_btn.grid(row=2, column=0, padx=PADX, pady=PADY)
+        read_write_btn.grid(row=3, column=0, padx=PADX, pady=PADY)
+        all_read_write_btn.grid(row=4, column=0, padx=PADX, pady=PADY)
+        img_lbl.grid(row=1, column=1, rowspan=6)
         state_lbl.grid(row=5, column=0, padx=8, pady=0.5)
 
         self.lbox.bind("<<ListboxSelect>>", self.on_select)
@@ -70,10 +85,10 @@ class App:
         self.root.config(menu=menubar)
 
     def about(self):
-        webbrowser.open("")
+        webbrowser.open("https://github.com/NyanBlak/BL2ReadOnlyApp")
 
     def report_issue(self):
-        webbrowser.open("")
+        webbrowser.open("https://github.com/NyanBlak/BL2ReadOnlyApp/issues")
 
     def set_read_only(self):
         active = self.lbox.get(tk.ACTIVE)
@@ -102,7 +117,7 @@ class App:
     def files(self):
         os.chdir(path_to_saves)
         files = filter(os.path.isfile, os.listdir(path_to_saves))
-        files = [f for f in files if f[-1] == 'v'] # add path to each file
+        files = [f for f in files if f[-1] == 'v' and f[0] != '.'] # add path to each file
         files.sort(key=os.path.getmtime)
         files.reverse()
         files = files[0:7]
