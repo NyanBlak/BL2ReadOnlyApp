@@ -137,7 +137,7 @@ class App:
 
     def set_save_folder(self):
         folder = filedialog.askdirectory()
-        msg = tk.messagebox.askyesno(title='Set Saves Folder', message=f"Set '{folder}' as saves folder? \n\nThis can be changed later.")
+        msg = tk.messagebox.askyesno(title='Set Saves Folder', message=f"Set '{folder}' as saves folder? \n\nThis can be changed later")
         if msg:
             with open(current_path + 'saves.txt', 'w') as f:
                 f.write(folder)
