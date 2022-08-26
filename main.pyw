@@ -1,11 +1,11 @@
 import os
 import platform
+import json
+from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWUSR
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
 import customtkinter as ctk
-from stat import S_IREAD, S_IRGRP, S_IROTH, S_IWUSR
-import json
 
 # tester_file = "tester.txt"
 
@@ -26,6 +26,7 @@ class App:
         self.root = root
         self.root.geometry('410x310')
         self.root.title('BL2 R.O.S')
+        ctk.set_appearance_mode("System")
         ctk.set_default_color_theme(current_path + 'theme.json')
         self.image = tk.PhotoImage(file=current_path + 'vault.png')
         self.state = tk.StringVar()
@@ -122,15 +123,6 @@ def launch_main_program():
         else:
             print(content)
 
-def launch_screen(root):
-    lbl = ctk.CTkLabel(root, text='tester')
-    set_save_folder_btn = ctk.CTkButton(root, text='set save fodler', command=lambda: set_save_folder(root))
-    end_btn = ctk.CTkButton(root, text='Continue', command=launch_main_program)
-
-    lbl.pack()
-    set_save_folder_btn.pack()
-    end_btn.pack()
-
 def main():
     global current_path
     global img
@@ -144,10 +136,6 @@ def main():
     with open(current_path + 'saves.txt', 'r') as f:
         path_to_saves = f.read().strip() + slash
 
-    if path_to_saves == '':
-        first_run_root = ctk.CTk()
-        launch_screen(first_run_root)
-        first_run_root.mainloop()
     root = ctk.CTk()
     app = App(root)
     root.mainloop()
