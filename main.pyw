@@ -21,16 +21,16 @@ import webbrowser
 
 if 'macOS' in platform.platform():
     PADX, PADY = 8, 0.5
-    WIDTH, HEIGHT = 120, 10 
+    btnWIDTH, btnHEIGHT = 120, 10 
     TITLE_FONT = 'Roboto 30 bold'
-    GEO = '390x320'
+    WIDTH, HEIGHT = SIZE = 390, 320
     IMAGE_SIZE = int(260*0.8), int(281*0.8)
     LISTBOX_WIDTH = 13
 else:
     PADX, PADY = 10, 5
-    WIDTH, HEIGHT = 107, 10
+    btnWIDTH, btnHEIGHT = 107, 10
     TITLE_FONT = 'Roboto 24 bold'
-    GEO = '370x340'
+    WIDTH, HEIGHT = SIZE = 370, 340
     IMAGE_SIZE = int(260*1.5), int(281*1.5)
     LISTBOX_WIDTH = 16
 
@@ -39,7 +39,6 @@ class App:
 
     def __init__(self, root):
         self.root = root
-        self.root.geometry(GEO)
         self.root.title('BL2 Read Only App')
 
         ctk.set_appearance_mode("System")
@@ -50,6 +49,13 @@ class App:
         self.image = ImageTk.PhotoImage(resize_img)
         self.root.iconphoto(False, self.image)
 
+
+
+        self.MODE_RELX = 0 if not small_mode else 0.2
+
+        REAL_WIDTH = WIDTH if not small_mode else int(WIDTH*0.42)
+        self.root.geometry(f"{str(REAL_WIDTH)}x{str(HEIGHT)}")
+
         self.state = tk.StringVar()
         self.build()
 
@@ -59,14 +65,14 @@ class App:
 
         self.lbox = tk.Listbox(main_frame, height=6, width=LISTBOX_WIDTH)
         scroll = ctk.CTkScrollbar(main_frame, command=self.lbox.yview, height=105)
-        read_only_btn = ctk.CTkButton(main_frame, text='Read Only', height=HEIGHT, width=WIDTH, command=self.set_read_only)
-        read_write_btn = ctk.CTkButton(main_frame, text='Read & Write', height=HEIGHT, width=WIDTH, command=self.set_read_and_write)
-        all_read_write_btn = ctk.CTkButton(main_frame, text='All Read & Write', height=HEIGHT, width=WIDTH, command=self.set_all_read_and_write)
+        read_only_btn = ctk.CTkButton(main_frame, text='Read Only', height=btnHEIGHT, width=btnWIDTH, command=self.set_read_only)
+        read_write_btn = ctk.CTkButton(main_frame, text='Read & Write', height=btnHEIGHT, width=btnWIDTH, command=self.set_read_and_write)
+        all_read_write_btn = ctk.CTkButton(main_frame, text='All Read & Write', height=btnHEIGHT, width=btnWIDTH, command=self.set_all_read_and_write)
 
         state_lbl = ctk.CTkLabel(self.root, textvariable=self.state)
         img_lbl = ctk.CTkLabel(self.root, image=self.image, width=4, height=4)
 
-        title_lbl.place(relx=0.3, rely=0.02)
+        title_lbl.place(relx=0.3-self.MODE_RELX, rely=0.02)
         main_frame.place(relx=0.03, rely=0.15)
         self.lbox.place(relx=0.1, rely=0.05)
         scroll.place(relx=0.8, rely=0.05)
@@ -76,15 +82,9 @@ class App:
 
         self.lbox.config(yscrollcommand=scroll.set)
 
-        #title_lbl.place(relx=0.1)
-        #main_frame.place(relx=0.03, rely=0.15)
-        #self.lbox.place(relx=0.1, rely=0.05)
-        #read_only_btn.place(relx=0.1, rely=0.55)
-        #read_write_btn.place(relx=0.1, rely=0.70)
-        #all_read_write_btn.place(relx=0.1, rely=0.85)
-
         state_lbl.place(relx=0.03, rely=0.85)
-        img_lbl.place(relx=0.45, rely=0.15)
+        if not small_mode:
+            img_lbl.place(relx=0.45, rely=0.15)
 
         self.lbox.bind("<<ListboxSelect>>", self.on_select)
 
@@ -106,6 +106,13 @@ class App:
         filemenu.add_separator()
         filemenu.add_command(label="Refresh", command=restart)
         menubar.add_cascade(label="File", menu=filemenu)
+
+        viewmenu = tk.Menu(menubar, tearoff=0)
+        if not small_mode:
+            viewmenu.add_command(label="Small Mode", command=lambda: self.set_size_mode(True))
+        else:
+            viewmenu.add_command(label="Large Mode", command=lambda: self.set_size_mode(False))
+        menubar.add_cascade(label="View", menu=viewmenu)
 
         helpmenu = tk.Menu(menubar, tearoff=0)
         helpmenu.add_command(label="About", command=self.about)
@@ -145,6 +152,12 @@ class App:
                 self.state.set('Read & Write')
         except PermissionError:
             self.state.set('Read Only')
+
+    def set_size_mode(self, s_mode=True):
+        config["small_mode"] = s_mode
+        with open(current_path + 'config.json', 'w') as f:
+            f.write(json.dumps(config))
+        restart(self.root)
 
     def set_save_folder(self):
         folder = filedialog.askdirectory()
@@ -221,6 +234,8 @@ def main():
     global path_to_saves
     global characters
     global inv_characters
+    global config
+    global small_mode
 
     slash = '/' if 'macOS' in platform.platform() else '\\'
 
@@ -233,6 +248,10 @@ def main():
     with open(current_path + "characters.json", "r") as f:
         characters = json.load(f)
         inv_characters = {v: k for k, v in characters.items()}
+
+    with open(current_path + 'config.json', 'r') as f:
+        config = json.load(f)
+    small_mode = config["small_mode"]
 
     root = ctk.CTk()
     app = App(root)
