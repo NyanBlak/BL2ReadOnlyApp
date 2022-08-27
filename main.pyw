@@ -22,14 +22,14 @@ import webbrowser
 if 'macOS' in platform.platform():
     PADX, PADY = 8, 0.5
     WIDTH, HEIGHT = 120, 10 
-    TITLE_FONT = 'Arial 30 bold'
+    TITLE_FONT = 'Roboto 30 bold'
     GEO = '390x320'
     IMAGE_SIZE = int(260*0.8), int(281*0.8)
     LISTBOX_WIDTH = 13
 else:
     PADX, PADY = 10, 5
     WIDTH, HEIGHT = 107, 10
-    TITLE_FONT = 'Arial 24 bold'
+    TITLE_FONT = 'Roboto 24 bold'
     GEO = '370x340'
     IMAGE_SIZE = int(260*1.5), int(281*1.5)
     LISTBOX_WIDTH = 16
@@ -57,7 +57,8 @@ class App:
         title_lbl = ctk.CTkLabel(self.root, text="BL2ROA", text_font=TITLE_FONT)
         main_frame = ctk.CTkFrame(self.root, width=155, height=220, corner_radius=10)
 
-        self.lbox = tk.Listbox(main_frame, height=len(self.files), width=LISTBOX_WIDTH)
+        self.lbox = tk.Listbox(main_frame, height=6, width=LISTBOX_WIDTH)
+        scroll = ctk.CTkScrollbar(main_frame, command=self.lbox.yview, height=105)
         read_only_btn = ctk.CTkButton(main_frame, text='Read Only', height=HEIGHT, width=WIDTH, command=self.set_read_only)
         read_write_btn = ctk.CTkButton(main_frame, text='Read & Write', height=HEIGHT, width=WIDTH, command=self.set_read_and_write)
         all_read_write_btn = ctk.CTkButton(main_frame, text='All Read & Write', height=HEIGHT, width=WIDTH, command=self.set_all_read_and_write)
@@ -68,9 +69,19 @@ class App:
         title_lbl.place(relx=0.3, rely=0.02)
         main_frame.place(relx=0.03, rely=0.15)
         self.lbox.place(relx=0.1, rely=0.05)
+        scroll.place(relx=0.8, rely=0.05)
         read_only_btn.place(relx=0.1, rely=0.625)
         read_write_btn.place(relx=0.1, rely=0.75)
         all_read_write_btn.place(relx=0.1, rely=0.875)
+
+        self.lbox.config(yscrollcommand=scroll.set)
+
+        #title_lbl.place(relx=0.1)
+        #main_frame.place(relx=0.03, rely=0.15)
+        #self.lbox.place(relx=0.1, rely=0.05)
+        #read_only_btn.place(relx=0.1, rely=0.55)
+        #read_write_btn.place(relx=0.1, rely=0.70)
+        #all_read_write_btn.place(relx=0.1, rely=0.85)
 
         state_lbl.place(relx=0.03, rely=0.85)
         img_lbl.place(relx=0.45, rely=0.15)
@@ -198,7 +209,6 @@ class App:
         files = [f for f in files if f[-1] == 'v' and f[0] != '.'] # add path to each file
         files.sort(key=os.path.getmtime)
         files.reverse()
-        files = files[0:7]
         return files
 
 def restart(root):
