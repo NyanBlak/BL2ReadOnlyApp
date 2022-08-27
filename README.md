@@ -32,6 +32,14 @@ Save aliases can be set to know which character is represented by each save.
 
 ## macOS
 
+#### Light Mode
+
+<img width="502" alt="image" src="https://user-images.githubusercontent.com/71462273/187021021-26bbd61e-6d55-497e-848c-372bef1dec5b.png">
+
+#### Dark Mode
+
+<img width="502" alt="image" src="https://user-images.githubusercontent.com/71462273/187021030-3515f521-2298-4627-8df1-c12ba447d615.png">
+
 ## Linux
 
 Without a Linux machine it is impossible for me to cross-compile BL2ROA. Sorry!
