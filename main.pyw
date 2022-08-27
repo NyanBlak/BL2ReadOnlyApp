@@ -108,7 +108,7 @@ class App:
         filemenu.add_separator()
         filemenu.add_command(label="Set Saves Folder", command=self.set_save_folder)
         filemenu.add_separator()
-        filemenu.add_command(label="Refresh", command=restart)
+        filemenu.add_command(label="Refresh", command=lambda: restart(self.root))
         menubar.add_cascade(label="File", menu=filemenu)
 
         viewmenu = tk.Menu(menubar, tearoff=0)
