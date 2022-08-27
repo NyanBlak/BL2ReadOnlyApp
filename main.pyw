@@ -24,14 +24,18 @@ if 'macOS' in platform.platform():
     btnWIDTH, btnHEIGHT = 120, 10 
     TITLE_FONT = 'Roboto 30 bold'
     WIDTH, HEIGHT = SIZE = 390, 320
+    SMALL_WIDTH = WIDTH * 0.42
     IMAGE_SIZE = int(260*0.8), int(281*0.8)
+    SCROLL_HEIGHT = 105
     LISTBOX_WIDTH = 13
 else:
     PADX, PADY = 10, 5
     btnWIDTH, btnHEIGHT = 107, 10
     TITLE_FONT = 'Roboto 24 bold'
     WIDTH, HEIGHT = SIZE = 370, 340
+    SMALL_WIDTH = WIDTH * 0.45
     IMAGE_SIZE = int(260*1.5), int(281*1.5)
+    SCROLL_HEIGHT = 102
     LISTBOX_WIDTH = 16
 
 
@@ -53,7 +57,7 @@ class App:
 
         self.MODE_RELX = 0 if not small_mode else 0.2
 
-        REAL_WIDTH = WIDTH if not small_mode else int(WIDTH*0.42)
+        REAL_WIDTH = int(WIDTH if not small_mode else SMALL_WIDTH)
         self.root.geometry(f"{str(REAL_WIDTH)}x{str(HEIGHT)}")
 
         self.state = tk.StringVar()
@@ -64,7 +68,7 @@ class App:
         main_frame = ctk.CTkFrame(self.root, width=155, height=220, corner_radius=10)
 
         self.lbox = tk.Listbox(main_frame, height=6, width=LISTBOX_WIDTH)
-        scroll = ctk.CTkScrollbar(main_frame, command=self.lbox.yview, height=105)
+        scroll = ctk.CTkScrollbar(main_frame, command=self.lbox.yview, height=SCROLL_HEIGHT)
         read_only_btn = ctk.CTkButton(main_frame, text='Read Only', height=btnHEIGHT, width=btnWIDTH, command=self.set_read_only)
         read_write_btn = ctk.CTkButton(main_frame, text='Read & Write', height=btnHEIGHT, width=btnWIDTH, command=self.set_read_and_write)
         all_read_write_btn = ctk.CTkButton(main_frame, text='All Read & Write', height=btnHEIGHT, width=btnWIDTH, command=self.set_all_read_and_write)
